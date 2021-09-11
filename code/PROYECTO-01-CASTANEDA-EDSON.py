@@ -4,20 +4,20 @@ from data.lifestore_file import lifestore_products, lifestore_sales, lifestore_s
 admin_users = {'ecastaneda': 'lifestore12345', 'cguillen': 'holamundo'}
 
 # Login de usuario
-acesso = True # If true, accede a la información de LifeStore
+data_access = False # If true, accede a la información de LifeStore
 additional_attempts = 2 # Intentos extra en caso de login fallido
 user = input("Ingrese su usuario: ")
 password = input("Ingrese su contraseña: ")
-while acesso is False and additional_attempts > 0:
+while data_access is False and additional_attempts > 0:
      
     # Validar si el usuario existe
     if user in admin_users.keys():
         #  Caso: Usuario/Contraseña validos
         if password == admin_users[user]:
-            acesso = True
+            data_access = True
             print("Bienvenido "+user+".")
     # Caso: usuario o contraseña son invalidos
-    if acesso is False:
+    if data_access is False:
         additional_attempts-=1
         print("Error con el usuario o contraseña proporcionados. Revise e intente nuevamente.")
         # Reingresar datos para siguiente iteración
@@ -25,7 +25,7 @@ while acesso is False and additional_attempts > 0:
         password = input("Ingrese su contraseña nuevamente: ")
 
 # Acceso correcto
-if acesso:
+if data_access:
     # ANALISIS DE VENTAS Y BUSQUEDAS POR PRODUCTO
 
     # Inicializar variables relacionadas al producto
@@ -109,5 +109,5 @@ if acesso:
 
 # 3 intentos fallidos
 else:
-    print("Demasiados intentos.\nEl acesso se ha desabilitado para este equipo.\n"+
+    print("Demasiados intentos.\nEl acceso se ha desabilitado para este equipo.\n"+
           "Para poder acceder nuevamente, acercarse con el equipo de TI de Life Store.")
