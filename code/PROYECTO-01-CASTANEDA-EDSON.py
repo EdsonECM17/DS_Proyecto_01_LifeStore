@@ -75,6 +75,38 @@ if acesso:
             refund_per_product_pct[id_product] = 0
 
 
+    # ANALISIS DE VENTAS Y BUSQUEDAS POR TIEMPO (mes y año)
+    # Inicializar datos del cada mes y datos anuales
+    sales_income_per_month = {}
+    sales_number_per_month = {}
+    sales_year = {'sales_number': 0, 'sales_income': 0}
+    for i in range(1,13):
+        sales_income_per_month[i] = 0
+        sales_number_per_month[i] = 0
+    
+    # Iniciar analisis de cada venta registrada
+    for sale in lifestore_sales:
+        # Identificar mes de la fecha a partir del string en lifestore_sales
+        month=sale[3].split('/')[1]
+        # Añadir venta al conteo mensual
+        sales_number_per_month[int(month)] += 1
+        # Buscar precio de producto
+        for product in lifestore_products:
+            if sale[1] == product[0]:
+                # Añadir precio a ingresos del mes
+                sales_income_per_month[int(month)] += product[2]
+                break
+    
+    # Añadir resultados de cada mes a la variable año
+    for month in sales_income_per_month.keys():
+        sales_year['sales_number'] += sales_number_per_month[month]
+        sales_year['sales_income'] += sales_income_per_month[month]
+    # Ventas promedio por mes
+    month_sales_avg = round(sales_year['sales_number']/12, 2)
+    # Meses ordenados por mayor numero de ventas
+    month_most_sales = sorted(sales_number_per_month, key=sales_number_per_month.get, reverse=True)
+
+
 # 3 intentos fallidos
 else:
     print("Demasiados intentos.\nEl acesso se ha desabilitado para este equipo.\n"+
