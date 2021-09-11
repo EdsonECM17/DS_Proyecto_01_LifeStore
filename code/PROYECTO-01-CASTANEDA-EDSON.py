@@ -31,10 +31,14 @@ if data_access:
     # Inicializar variables relacionadas al producto
     sales_per_product = {}  #  Ventas de cada productio (id_product:total_sales_of_product)
     searches_per_product = {}  # Busquedas de cada productio (id_product:total_searches_of_product)
+    not_sold_products = []  # Id de productos no vendidos
     reviews_per_product_sum = {}  # Suma de reseñas (id_product:reviews_sum)
     reviews_per_product_avg = {} # Promedio de reseñas de cada producto (id_product:reviews_avg)
     refunds_per_product = {}  # Conteo de devoluciones por producto (id_product:refunds_sum)
     refund_per_product_pct = {} # Porcentaje de devoluciones de producto respecto a total vendido (id_product:refunds_avg)
+    reviews_weight = 0.6  # Valor de reseñas para determinar calificación de producto.
+    refunds_weight = 0.4  # Valor de rembolsos para determinar calificación de producto.
+    grade_product = {}  # Calificación de producto. 60 % reviews y 40 % porcentaje de devoluciones. (id_product: grade)
 
     # Iniciar analisis de cada producto
     for product in lifestore_products:
@@ -73,6 +77,21 @@ if data_access:
         else:
             reviews_per_product_avg[id_product] = 0
             refund_per_product_pct[id_product] = 0
+    
+    for id_product in refund_per_product_pct.keys():
+        # Se consideran solo productos con ventas
+        if sales_per_product[id_product] > 0:
+            # Obtener partes de califiguración y sumarlas para obtener la calificación
+            reviews_part = reviews_weight*(reviews_per_product_avg[id_product]/5)*100
+            refunds_part = refunds_weight*(100-refund_per_product_pct[id_product])
+            grade_product[id_product]= reviews_part + refunds_part
+        else:
+            not_sold_products.append(id_product)
+
+    # Ordenar calificaciones de mayor a menor
+    grade_sorted = sorted(grade_product, key=grade_product.get, reverse=True)
+    best_graded = grade_sorted[:20]
+    worse_graded = grade_sorted[-20:]
 
 
     # ANALISIS DE VENTAS Y BUSQUEDAS POR TIEMPO (mes y año)
