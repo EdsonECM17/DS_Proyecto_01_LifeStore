@@ -4,7 +4,7 @@ from data.lifestore_file import lifestore_products, lifestore_sales, lifestore_s
 # Lista de meses del año (como texto)
 month_list = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 # Lista de usuarios validos para login
-admin_users = {'ecastaneda': 'lifestore12345', 'cguillen': 'holamundo'}
+admin_users = {'edson': 'lifestore12345', 'carlos': 'holamundo', 'luis':'noholamundo'}
 
 # Login de usuario
 data_access = False # If true, accede a la información de LifeStore
