@@ -1,11 +1,14 @@
 from data.lifestore_file import lifestore_products, lifestore_sales, lifestore_searches
 
-# Se agrega lista de usuarios validos para login
+# CONTANTES GLOABLES
+# Lista de meses del año (como texto)
+month_list = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+# Lista de usuarios validos para login
 admin_users = {'ecastaneda': 'lifestore12345', 'cguillen': 'holamundo'}
 
 # Login de usuario
 data_access = False # If true, accede a la información de LifeStore
-additional_attempts = 2 # Intentos extra en caso de login fallido
+additional_attempts = 3 # Intentos extra en caso de login fallido
 user = input("Ingrese su usuario: ")
 password = input("Ingrese su contraseña: ")
 while data_access is False and additional_attempts > 0:
@@ -19,6 +22,8 @@ while data_access is False and additional_attempts > 0:
     # Caso: usuario o contraseña son invalidos
     if data_access is False:
         additional_attempts-=1
+        if additional_attempts == 0:
+            continue
         print("Error con el usuario o contraseña proporcionados. Revise e intente nuevamente.")
         # Reingresar datos para siguiente iteración
         user = input("Ingrese su usuario nuevamente: ")
@@ -121,10 +126,34 @@ if data_access:
         sales_year['sales_number'] += sales_number_per_month[month]
         sales_year['sales_income'] += sales_income_per_month[month]
     # Ventas promedio por mes
-    month_sales_avg = round(sales_year['sales_number']/12, 2)
+    month_sales_avg = round(sales_year['sales_number']/12)
     # Meses ordenados por mayor numero de ventas
     month_most_sales = sorted(sales_number_per_month, key=sales_number_per_month.get, reverse=True)
 
+    # Resultados de analisis de tiempo
+    print("Analisis por tiempo - Resultados\n\n")
+    for month in sales_income_per_month.keys():
+        # Generar mensaje de ingresos al mes que mostrar e imprimir.
+        # Mediante month y month_list se obtiene el mes como texto
+        month_income_msg = ("El mes de " + month_list[int(month-1)] + " se tuvieron ingresos de $" +
+                            str(sales_income_per_month[month])+ ", con un total de " +
+                            str(sales_number_per_month[month]) + " ventas.")
+        print(month_income_msg)
+    
+    # Mostrar ventas promedio mensuales
+    print("\nEn promedio al mes se venden " + str(month_sales_avg) + " productos.")
+
+    # Mostrar ingresos y ventas totales anuales
+    year_income_msg = ("\nEn total, en el año se tuvieron ingresos de $" + str(sales_year['sales_income']) +
+                       ", obtenidos mediante " + str(sales_year['sales_number']) + " ventas.")
+    print(year_income_msg)
+    # Mostrar meses con mas ventas al año
+    # For para formar string con 6 meses con mas ventas al año
+    print("\nLos meses con mas ventas al año son:")
+    i = 0
+    for month in month_most_sales[:6]:
+        i += 1
+        print(" " + str(i) + ".-" + month_list[int(month-1)])
 
 # 3 intentos fallidos
 else:
