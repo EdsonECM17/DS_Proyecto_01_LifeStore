@@ -7,15 +7,15 @@ month_list = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "A
 admin_users = {'edson': 'lifestore12345', 'carlos': 'holamundo', 'luis':'noholamundo'}
 
 # Login de usuario
-data_access = False # If true, accede a la información de LifeStore
-additional_attempts = 3 # Intentos extra en caso de login fallido
+data_access = False  # If true, accede a la información de LifeStore
+additional_attempts = 3  # Intentos extra en caso de login fallido
 user = input("Ingrese su usuario: ")
 password = input("Ingrese su contraseña: ")
 while data_access is False and additional_attempts > 0:
      
     # Validar si el usuario existe
     if user in admin_users.keys():
-        #  Caso: Usuario/Contraseña validos
+        # Caso: Usuario/Contraseña validos
         if password == admin_users[user]:
             data_access = True
             print("Bienvenido "+user+".")
@@ -34,18 +34,18 @@ if data_access:
     # ANALISIS DE VENTAS Y BUSQUEDAS POR PRODUCTO
 
     # Inicializar variables relacionadas al producto
-    sales_per_product = {}  #  Ventas de cada productio (id_product:total_sales_of_product)
+    sales_per_product = {}  # Ventas de cada productio (id_product:total_sales_of_product)
     searches_per_product = {}  # Busquedas de cada productio (id_product:total_searches_of_product)
     not_sold_products = []  # Id de productos no vendidos
     reviews_per_product_sum = {}  # Suma de reseñas (id_product:reviews_sum)
-    reviews_per_product_avg = {} # Promedio de reseñas de cada producto (id_product:reviews_avg)
+    reviews_per_product_avg = {}  # Promedio de reseñas de cada producto (id_product:reviews_avg)
     refunds_per_product = {}  # Conteo de devoluciones por producto (id_product:refunds_sum)
-    refund_per_product_pct = {} # Porcentaje de devoluciones de producto respecto a total vendido (id_product:refunds_avg)
+    refund_per_product_pct = {}  # Porcentaje de devoluciones de producto respecto a total vendido (id_product:refunds_avg)
     reviews_weight = 0.6  # Valor de reseñas para determinar calificación de producto.
     refunds_weight = 0.4  # Valor de rembolsos para determinar calificación de producto.
     grade_product = {}  # Calificación de producto. 60 % reviews y 40 % porcentaje de devoluciones. (id_product: grade)
 
-    # Iniciar analisis de cada producto
+    # Iniciar análisis de cada producto
     for product in lifestore_products:
         sales_per_product[product[0]] = 0
         searches_per_product[product[0]] = 0
@@ -63,10 +63,10 @@ if data_access:
             if search[1] == product[0]:
                 searches_per_product[product[0]] +=1
 
-    # Resumen de analisis por producto
-    # Identificar id de 50 productos mas vendidos
+    # Resumen de análisis por producto
+    # Identificar id de 50 productos más vendidos
     most_sold_products = sorted(sales_per_product, key=sales_per_product.get, reverse=True)[:50]
-    # Identificar id de 100 productos mas buscados
+    # Identificar id de 100 productos más buscados
     most_searched_products = sorted(searches_per_product, key=searches_per_product.get, reverse=True)[:100]
     # Identificar id de 50 productos menos vendidos
     less_sold_products = sorted(sales_per_product, key=sales_per_product.get)[:50]
@@ -94,10 +94,8 @@ if data_access:
             not_sold_products.append(id_product)
 
     # Ordenar calificaciones de mayor a menor
-    grade_sorted = sorted(grade_product, key=grade_product.get, reverse=True)
-    best_graded = grade_sorted[:20]
-    worse_graded = grade_sorted[-20:]
-
+    best_graded = sorted(grade_product, key=grade_product.get, reverse=True)[:20] # mayor a menor
+    worse_graded = sorted(grade_product, key=grade_product.get)[:20] # menor a mayor
 
     # ANALISIS DE VENTAS Y BUSQUEDAS POR TIEMPO (mes y año)
     # Inicializar datos del cada mes y datos anuales
@@ -108,7 +106,7 @@ if data_access:
         sales_income_per_month[i] = 0
         sales_number_per_month[i] = 0
     
-    # Iniciar analisis de cada venta registrada
+    # Iniciar análisis de cada venta registrada
     for sale in lifestore_sales:
         # Identificar mes de la fecha a partir del string en lifestore_sales
         month=sale[3].split('/')[1]
@@ -130,8 +128,79 @@ if data_access:
     # Meses ordenados por mayor numero de ventas
     month_most_sales = sorted(sales_number_per_month, key=sales_number_per_month.get, reverse=True)
 
-    # Resultados de analisis de tiempo
-    print("Analisis por tiempo - Resultados\n\n")
+    print("\nRESULTADOS OBTENIDOS:\n")
+    # Resultados de ventas y busqueda del producto
+    print("Análisis de ventas y búsquedas de producto - Resultados\n")
+    # Productos con más ventas
+    print("Los productos más vendidos son:")
+    i=0
+    for id_product in most_sold_products:
+        i+=1
+        # For para identificar nombre de producto por su id_product
+        for product in lifestore_products:
+            if id_product == product[0]:
+                product_name = product[1]
+                break
+        print(" "+str(i)+".-"+product_name+". Ventas:"+str(sales_per_product[id_product]))
+    
+    # Productos con menos ventas
+    print("\nLos productos menos vendidos son:")
+    i=0
+    for id_product in less_sold_products:
+        i+=1
+        for product in lifestore_products:
+            if id_product == product[0]:
+                product_name = product[1]
+                break
+        print(" "+str(i)+".-"+product_name+". Ventas:"+str(sales_per_product[id_product]))
+    # Productos con mas búsquedas
+    print("\nLos productos más buscados son:")
+    i=0
+    for id_product in most_searched_products:
+        i+=1
+        for product in lifestore_products:
+            if id_product == product[0]:
+                product_name = product[1]
+                break
+        print(" "+str(i)+".-"+product_name+". Ventas:"+str(sales_per_product[id_product]))
+    # Productos con menos búsquedas
+    print("\nLos productos menos buscados son:")
+    i=0
+    for id_product in less_searched_products:
+        i+=1
+        for product in lifestore_products:
+            if id_product == product[0]:
+                product_name = product[1]
+                break
+        print(" "+str(i)+".-"+product_name+"."+str(sales_per_product[id_product]))
+
+
+    # Resultados de acuerdo a valoración de productos
+    print("\n\nAnálisis de valoración de producto:")
+    print("Nota: Este análisis no evalúa productos que no tuvieron ventas.\n")
+    # Productos con mejor calificación
+    print("Los productos con mejor valoración por el cliente son:")
+    i=0
+    for id_product in best_graded:
+        i+=1
+        for product in lifestore_products:
+            if id_product == product[0]:
+                product_name = product[1]
+                break
+        print(" "+str(i)+".-"+product_name+".")
+    # Productos con menor calificación
+    print("Los productos con menor valoración por el cliente son:")
+    i=0
+    for id_product in worse_graded:
+        i+=1
+        for product in lifestore_products:
+            if id_product == product[0]:
+                product_name = product[1]
+                break
+        print(" "+str(i)+".-"+product_name+".")
+    
+    # Resultados de análisis de tiempo
+    print("\n\nAnálisis por tiempo - Resultados\n")
     for month in sales_income_per_month.keys():
         # Generar mensaje de ingresos al mes que mostrar e imprimir.
         # Mediante month y month_list se obtiene el mes como texto
@@ -147,9 +216,9 @@ if data_access:
     year_income_msg = ("\nEn total, en el año se tuvieron ingresos de $" + str(sales_year['sales_income']) +
                        ", obtenidos mediante " + str(sales_year['sales_number']) + " ventas.")
     print(year_income_msg)
-    # Mostrar meses con mas ventas al año
-    # For para formar string con 6 meses con mas ventas al año
-    print("\nLos meses con mas ventas al año son:")
+    # Mostrar meses con más ventas al año
+    # For para formar string con 6 meses con más ventas al año
+    print("\nLos meses con más ventas al año son:")
     i = 0
     for month in month_most_sales[:6]:
         i += 1
