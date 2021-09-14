@@ -1,3 +1,16 @@
+"""
+LIFESTORE_DATA_FRAMES
+
+Este script convierte las listas de datos de entrada  en data/filestore_file.py
+a DataFrames, para optimizar su manipulación. Los nombres de las columnas de
+cada tabla se asignaron de acuerdo a la documentación de ese script.
+
+Este modulo incluye el siguiente procesamiento: 
+     - En la datos de ventas, se conservan solo los pertenecientes al 
+       año de interes (2020).
+
+"""
+
 import pandas as pd
 
 import data.lifestore_file as lifestore
@@ -13,5 +26,3 @@ lifestore_sales = lifestore_sales[lifestore_sales["date"]>="1/1/2020"]
 
 # Create dataframe of products
 lifestore_products = pd.DataFrame(lifestore.lifestore_products, columns = ["id_product", "name", "price", "category", "stock"])
-
-
