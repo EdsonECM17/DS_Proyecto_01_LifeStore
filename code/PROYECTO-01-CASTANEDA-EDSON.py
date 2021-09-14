@@ -1,4 +1,3 @@
-from os import access
 from data.lifestore_file import lifestore_products, lifestore_sales, lifestore_searches
 
 from login.user_access import login
@@ -204,8 +203,3 @@ if data_access:
     for month in month_most_sales[:6]:
         i += 1
         print(" " + str(i) + ".-" + month_list[int(month-1)])
-
-# 3 intentos fallidos
-else:
-    print("Demasiados intentos.\nEl acceso se ha desabilitado para este equipo.\n"+
-          "Para poder acceder nuevamente, acercarse con el equipo de TI de Life Store.")

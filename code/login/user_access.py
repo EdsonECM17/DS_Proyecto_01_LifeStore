@@ -21,8 +21,10 @@ def login(login_attempts:int = 3):
     user_table = pd.read_csv(USER_FILE_PATH)
     # Iniciar intento de login
     while successful_login is False and login_attempts > 0:
-        # Si se agotaron los intentos, terminar la función con un False. 
+        # Caso: todos los intentos de registro son fallidos. Terminar la función con un False. 
         if login_attempts == 0:
+            print("Demasiados intentos.\nEl acceso se ha desabilitado para este equipo.\n"+
+                  "Para poder acceder nuevamente, acercarse con el equipo de TI de Life Store.")
             return False
         # Descontar un intento. 
         login_attempts-=1
