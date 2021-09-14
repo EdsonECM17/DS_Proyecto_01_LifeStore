@@ -1,0 +1,4 @@
+id_user,user_name,password,name,access_type,area
+1,edson,12345,Edson Castaneda,admin,all
+2,carlos,54321,Carlos Casillas,admin,all
+3,luis,holamundo,Luis Lopez,seller,procesadores

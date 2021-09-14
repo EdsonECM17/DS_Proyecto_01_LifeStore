@@ -1,33 +1,13 @@
 from data.lifestore_file import lifestore_products, lifestore_sales, lifestore_searches
 
+from login.user_access import login
+
 # CONTANTES GLOABLES
 # Lista de meses del año (como texto)
 month_list = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-# Lista de usuarios validos para login
-admin_users = {'edson': 'lifestore12345', 'carlos': 'holamundo', 'luis':'noholamundo'}
 
-# Login de usuario
-data_access = False  # If true, accede a la información de LifeStore
-additional_attempts = 3  # Intentos extra en caso de login fallido
-user = input("Ingrese su usuario: ")
-password = input("Ingrese su contraseña: ")
-while data_access is False and additional_attempts > 0:
-     
-    # Validar si el usuario existe
-    if user in admin_users.keys():
-        # Caso: Usuario/Contraseña validos
-        if password == admin_users[user]:
-            data_access = True
-            print("Bienvenido "+user+".")
-    # Caso: usuario o contraseña son invalidos
-    if data_access is False:
-        additional_attempts-=1
-        if additional_attempts == 0:
-            continue
-        print("Error con el usuario o contraseña proporcionados. Revise e intente nuevamente.")
-        # Reingresar datos para siguiente iteración
-        user = input("Ingrese su usuario nuevamente: ")
-        password = input("Ingrese su contraseña nuevamente: ")
+# Llamar a función que valida inicio de sesion
+data_access = login() # If true, continues
 
 # Acceso correcto
 if data_access:
@@ -223,8 +203,3 @@ if data_access:
     for month in month_most_sales[:6]:
         i += 1
         print(" " + str(i) + ".-" + month_list[int(month-1)])
-
-# 3 intentos fallidos
-else:
-    print("Demasiados intentos.\nEl acceso se ha desabilitado para este equipo.\n"+
-          "Para poder acceder nuevamente, acercarse con el equipo de TI de Life Store.")
