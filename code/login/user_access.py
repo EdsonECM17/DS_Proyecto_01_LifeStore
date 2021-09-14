@@ -1,4 +1,3 @@
-from os import access
 import pandas as pd
 
 # Declaro ruta donde encontrar el archivo con los usuarios permitidos
