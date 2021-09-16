@@ -7,7 +7,7 @@ class Filters():
     """Clase que permite filtrar los dataframes generados a partir de los datos de entrada,
        para optimizar los servicios de consulta de información especifica del programa.
     """
-    def filter_products_df(id_product: int or None = None, category: str or None = None,
+    def __filter_products_df(self, id_product: int or None = None, category: str or None = None,
                            name: str or None = None, price_min: int or None = None,
                            price_max: int or None = None, stock_min: int or None = None,
                            stock_max: int or None = None) -> DataFrame:
@@ -50,7 +50,7 @@ class Filters():
         return product_df
 
 
-    def filter_sales_df(id_sale: int or None = None, id_product: int or None = None,
+    def __filter_sales_df(self, id_sale: int or None = None, id_product: int or None = None,
                         score_min: int or None = None, score_max: int or None = None,
                         start_date: str or None = None, end_date: str or None = None,
                         refund: bool or None = None) -> DataFrame:
@@ -93,7 +93,7 @@ class Filters():
         return sales_df
 
 
-    def filter_searches_df(id_search: int or None = None, id_product: int or None = None) -> DataFrame:
+    def __filter_searches_df(self, id_search: int or None = None, id_product: int or None = None) -> DataFrame:
         """Filtra el dataframe de busquedas de acuerdo a valores en las columnas que tiene
            la tabla generada. Si no hay filtro, se regresa un dataframe completo.
 
