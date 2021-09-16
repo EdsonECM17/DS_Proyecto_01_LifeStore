@@ -4,15 +4,15 @@ from processing.lifestore_tables import lifestore_products, lifestore_sales, lif
 
 
 class Filters():
-    """Clase que permite filtrar los dataframes generados a partir de los datos de entrada,
-       para optimizar los servicios de consulta de información especifica del programa.
+    """ Clase que permite filtrar los dataframes generados a partir de los datos de entrada,
+        para optimizar los servicios de consulta de información especifica del programa.
     """
     def __filter_products_df(self, id_product: int or None = None, category: str or None = None,
                            name: str or None = None, price_min: int or None = None,
                            price_max: int or None = None, stock_min: int or None = None,
                            stock_max: int or None = None) -> DataFrame:
-        """Filtra el dataframe de productos de acuerdo a valores en las columnas que tiene
-           la tabla generada. Si no hay filtro, se regresa un dataframe completo.
+        """ Filtra el dataframe de productos de acuerdo a valores en las columnas que tiene
+            la tabla generada. Si no hay filtro, se regresa un dataframe completo.
 
         Args:
             id_product (int or None, optional): Id de producto. Defaults to None.
@@ -54,8 +54,8 @@ class Filters():
                         score_min: int or None = None, score_max: int or None = None,
                         start_date: str or None = None, end_date: str or None = None,
                         refund: bool or None = None) -> DataFrame:
-        """Filtra el dataframe de ventas de acuerdo a valores en las columnas que tiene
-           la tabla generada. Si no hay filtro, se regresa un dataframe completo.
+        """ Filtra el dataframe de ventas de acuerdo a valores en las columnas que tiene
+            la tabla generada. Si no hay filtro, se regresa un dataframe completo.
 
         Args:
             id_sale (int or None, optional): Id de venta. Defaults to None.
@@ -94,8 +94,8 @@ class Filters():
 
 
     def __filter_searches_df(self, id_search: int or None = None, id_product: int or None = None) -> DataFrame:
-        """Filtra el dataframe de busquedas de acuerdo a valores en las columnas que tiene
-           la tabla generada. Si no hay filtro, se regresa un dataframe completo.
+        """ Filtra el dataframe de busquedas de acuerdo a valores en las columnas que tiene
+            la tabla generada. Si no hay filtro, se regresa un dataframe completo.
 
         Args:
             id_search (int or None, optional): Id de busqueda. Defaults to None.
