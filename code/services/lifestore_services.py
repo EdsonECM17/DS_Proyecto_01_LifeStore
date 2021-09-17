@@ -83,3 +83,21 @@ class Service(Filters):
         # Contar busquedas
         searches_number = len(searches_df)
         return searches_number
+
+    def year_sales(self, year:int, id_product: int or None = None, refund_status: bool or None = None) -> int:
+        # Definir fecha de inicio del año y fecha de fin de año para filtros
+        year_start= f"1/1/{year}"
+        year_end = f"31/12/{year}"
+        # Usar función get ventas para obtener datos de ventas anuales con los filtros
+        sales_number = self.get_sales_number(start_date=year_start, end_date=year_end,
+                                             id_product=id_product, refund_status=refund_status)
+        return sales_number
+    
+    def year_income(self, year:int, id_product: int or None = None, refund_status: bool or None = None) -> int:
+        # Definir fecha de inicio del año y fecha de fin de año para filtros
+        year_start= f"1/1/{year}"
+        year_end = f"31/12/{year}"
+        # Usar función get ventas para obtener datos de ingresos anuales con los filtros
+        income = self.get_income(start_date=year_start, end_date=year_end,
+                                 id_product=id_product, refund_status=refund_status)
+        return income
