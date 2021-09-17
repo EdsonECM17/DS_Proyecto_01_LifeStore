@@ -50,7 +50,7 @@ def validate_question(question: str) -> bool:
         question (str): Pregunta que se quiere validar
 
     Returns:
-        bool: oolean que indica la respuesta seleccionada para la pregunta
+        bool: Indica la respuesta seleccionada para la pregunta
     """
     # Añadir opciones (Sí o No) al string de pregunta
     question = question.replace("?", " (Y o N)?:")
