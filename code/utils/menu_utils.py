@@ -4,7 +4,7 @@ MENU_UTILS
 Funciones auxiliares para el menú de consola que se usa en la función principal.
 Entre estas funciones se encuentras las siguientes:
     - Función para desplegar menú y seleccionar opción de dicho menú.
-    - Función para validar si se hace nueva consulta o cierra sesión.
+    - Función para validar si una pregunta de sí o no.
 
 """
 
@@ -43,14 +43,19 @@ def select_menu(menu_options: dict) -> int:
     return selected_option
 
 
-def validate_continue() -> bool:
-    """ Función para validar si se desea continuar dentro de la sesión o cerrala.
+def validate_question(question: str) -> bool:
+    """ Función para validar una pregunta de si o no.
+
+    Args:
+        question (str): Pregunta que se quiere validar
 
     Returns:
-        bool: Boolean que indica si continuar o no haciendo consultas
+        bool: oolean que indica la respuesta seleccionada para la pregunta
     """
+    # Añadir opciones (Sí o No) al string de pregunta
+    question = question.replace("?", " (Y o N)?:")
     while True:
-        selected_option = input("¿Desea consultar otra opción (Y o N)?:").upper()
+        selected_option = input(question).upper()
         # Validar si se selecciono una de las dos opciones
         if selected_option not in ["Y", "N"]:
             print("El dato no fue ingresado correctamente, favor de seleccionar una de las opciones especificadas.\n")
