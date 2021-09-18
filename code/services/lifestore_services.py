@@ -255,3 +255,36 @@ class Service(Filters):
         """
         stock = lifestore_products.loc[lifestore_products['id_product']== id_product, 'stock'].item()
         return stock
+
+    def get_product_grades(self, reviews_weight:float = 0.6, refunds_weight:float = 0.4,
+                           start_date: str or None = None, end_date: str or None = None,) -> dict:
+        # Inicializa variables
+        product_grades = {}
+        # Ciclo for para revisar cada producto diferente de la tabla productos
+        for row in lifestore_products.iterrows():
+                # Se obtiene id
+                id_product = row[1]['id_product']
+                # Para ese id, se obtiene tabla de ventas de producto
+                sales_df = self._Filters__filter_sales_df(id_product = id_product, start_date = start_date,
+                                                          end_date = end_date)
+                # Determinar total de ventas
+                total_sales = len(sales_df)
+                # Si las ventas son mayores a cero, revisa calificaciones del producto, sino calificación N.D.
+                if total_sales > 0:
+                    # Caso hay ventas
+                    # Obtener puntaje promedio de revisiones de clientes
+                    reviews_mean = sales_df["score"].mean()
+                    # Se normaliza puntaje de revisiones, valor entre 0 y 1
+                    reviews_normalized = (reviews_mean-1)/(5-1)
+                    # Contar devoluciones
+                    total_refunds = len(sales_df[sales_df["refund"] > 0])
+                    # Obtener relación entre productos no devueltos  y ventas del producto
+                    refunds_pct =  1 - total_refunds/total_sales
+                    # Se calcula calificación dandole pesos a las revisiones y a la cantidad de productos no devueltos
+                    product_grades[id_product] = round((reviews_weight*reviews_normalized + refunds_weight*refunds_pct)*100, 2)
+                else:
+                    # Caso no hubo ventas
+                    product_grades[id_product] = 'N.D.'
+ 
+        # Obtener subtabla de tabla de ventas con filas que cumplan con los filtros indicados
+        return product_grades

@@ -76,7 +76,6 @@ while data_access:
     
     elif main_menu_option == 2:
         # Caso productos rezagados
-        # Caso producto más vendidos
         # Consulta las ventas de cada producto
         product_sales = service.get_products_sales()
         # Ordenar lista de productos organizados de menor a mayor número de ventas
@@ -113,8 +112,49 @@ while data_access:
             product_name = service.get_product_name(product_id)
             # Despliega nombre del producto y busquedas al usuario
             print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Busquedas: {product_searches[product_id]}")
+    
     elif main_menu_option == 3:
-        print("1")
+        # Caso de valoración de productos
+        product_grades = service.get_product_grades()
+        # Separar productos con calificación (ventas>0) de los productos no calificados ('N.D.')
+        non_graded_products = {id_product:grade for (id_product,grade) in product_grades.items() if isinstance(grade, str)}
+        graded_products = {id_product:grade for (id_product,grade) in product_grades.items() if isinstance(grade, float)}
+        # Filtrar productos por calificacion de mayor a menor
+        most_valued_products = sorted(graded_products, key=graded_products.get, reverse=True)
+        # Productos con mejor valoración
+        print("Los productos mejor valorados son:")
+        for i in range(0, 20):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(most_valued_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = most_valued_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Muestra nombre del producto junto a su valoración
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Valoración: {product_grades[product_id]}.")
+        print("\n")
+        # Productos con menor valoración
+        print("Los productos peor valorados son:")
+        for i in range(0, 20):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(most_valued_products):
+                break
+            # Obtiene el id del producto en posición [-(1+i)]
+            product_id = most_valued_products[-(1+i)]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Muestra nombre del producto junto a su valoración
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Valoración:: {product_grades[product_id]}.")
+        print("\n")
+        print(f"Por otro lado, hay {len(non_graded_products)} equipos sin ventas, y en consecuencia, sin valoración.")
+        print("Los productos que no tienen valoración son:")
+        for product_id in non_graded_products.keys():
+                # Obten nombre del producto
+                product_name = service.get_product_name(product_id)
+                # Imprime datos del producto
+                print(f"ID:{product_id:02d} - {product_name}.")
+    
     elif main_menu_option == 4:
         # Caso: Ventas Anuales
         # Desplegar menú de ventas y obtener opción seleccionada
@@ -135,6 +175,7 @@ while data_access:
             # Se obtienen ingresos y se muestran resultados
             income = service.get_year_income(year, refund_status=refunds_case)
             print(f"En {year}, los ingresos totales son ${income:,.2f}.")
+    
     elif main_menu_option == 5:
         # Caso: Ventas Mensuales
         # Desplegar menú de ventas y obtener opción seleccionada
@@ -188,10 +229,13 @@ while data_access:
             for i in range(0,6):
                 month = month_most_income[11-i] # Del ultimo al primero
                 print(f"{i+1}.- {month_list[month-1]}")
+    
     elif main_menu_option == 6:
         print("1")
+    
     elif main_menu_option == 7:
         print("Opción no disponible.")
+    
     elif main_menu_option == 8:
         break
     # Despues de la consulta de un caso, validar si se desea continuar o salir.
