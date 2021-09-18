@@ -36,8 +36,10 @@ while data_access:
     main_menu_option = select_menu(main_menu)
     # Caso para cada opción del menu principal
     if main_menu_option == 1:
+        # Caso producto más vendidos
         print("1")
     elif main_menu_option == 2:
+        # Caso productos rezagados
         print("1")
     elif main_menu_option == 3:
         print("1")
@@ -54,12 +56,12 @@ while data_access:
             refunds_case = None
         if menu_sales_option == 1:
             # Se obtiene numero de ventas y se muestra resultado
-            sales_number = service.year_sales(year, refund_status=refunds_case)
+            sales_number = service.get_year_sales(year, refund_status=refunds_case)
             print(f"En {year}, se tuvieron un total de {sales_number} ventas.")
             print(f"En promedio, se tuvieron {round(sales_number/12)} ventas al mes.")
         elif menu_sales_option == 2:
             # Se obtienen ingresos y se muestran resultados
-            income = service.year_income(year, refund_status=refunds_case)
+            income = service.get_year_income(year, refund_status=refunds_case)
             print(f"En {year}, los ingresos totales son ${income:,.2f}.")
     elif main_menu_option == 5:
         # Caso: Ventas Mensuales
@@ -74,7 +76,7 @@ while data_access:
             refunds_case = None
         if menu_sales_option == 1:
             # Se obtiene numero de ventas de cada mes
-            sales_month = service.month_sales(year, refund_status=refunds_case)
+            sales_month = service.get_monthly_sales(year, refund_status=refunds_case)
             # Se muestran los resultados de cada mes
             print(f"Ventas mensuales del año {year}:")
             for month in sales_month.keys():
@@ -95,7 +97,7 @@ while data_access:
                 print(f"{i+1}.- {month_list[month-1]}")
         elif menu_sales_option == 2:
             # Se obtienen ingresos y se muestran resultados
-            income_month = service.month_income(year, refund_status=refunds_case)
+            income_month = service.get_monthly_income(year, refund_status=refunds_case)
             # Se muestran los resultados de cada mes
             print(f"Ingresos mensuales del año {year}:")
             for month in income_month.keys():
