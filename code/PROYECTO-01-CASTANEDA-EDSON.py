@@ -1,5 +1,5 @@
-from login.user_access import login
 from services.lifestore_services import Service
+from login.user_access import login
 from utils.menu_utils import select_menu, validate_question
 
 
@@ -37,10 +37,82 @@ while data_access:
     # Caso para cada opción del menu principal
     if main_menu_option == 1:
         # Caso producto más vendidos
-        print("1")
+        # Consulta las ventas de cada producto
+        product_sales = service.get_products_sales()
+        # Ordenar lista de productos organizados de mayor a menor número de ventas
+        most_sold_products = sorted(product_sales, key=product_sales.get, reverse=True)
+        # Filtrar y presentar los 50 productos más vendidos
+        print("Productos más vendidos de la tienda:")
+        for i in range(0, 50):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(most_sold_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = most_sold_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Obtiene la cantidad de unidades en inventario del producto
+            product_stock = service.get_product_stock(product_id)
+            # Muestra nombre del producto junto a ventas y unidades en inventario.
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Ventas: {product_sales[product_id]}.")
+            print(f"Unidades en inventario: {product_stock}.")
+        print('\n')
+        # Consulta las busquedas de cada producto
+        product_searches = service.get_products_searches()
+        # Ordenar lista de productos organizados de mayor a menor número de busquedas
+        most_searched_products = sorted(product_searches, key=product_searches.get, reverse=True)
+        # Filtrar y presentar los 50 productos más buscados
+        print("Productos más buscados de la tienda:")
+        for i in range(0, 50):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(most_searched_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = most_searched_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Despliega nombre del producto y busquedas al usuario.
+            print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Busquedas: {product_searches[product_id]}")
+    
     elif main_menu_option == 2:
         # Caso productos rezagados
-        print("1")
+        # Caso producto más vendidos
+        # Consulta las ventas de cada producto
+        product_sales = service.get_products_sales()
+        # Ordenar lista de productos organizados de menor a mayor número de ventas
+        less_sold_products = sorted(product_sales, key=product_sales.get, reverse=True)
+        # Filtrar y presentar los 50 productos menos vendidos
+        print("Productos menos vendidos de la tienda:")
+        for i in range(0, 50):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(less_sold_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = less_sold_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Obtiene la cantidad de unidades en inventario del producto
+            product_stock = service.get_product_stock(product_id)
+            # Muestra nombre del producto junto a ventas y unidades en inventario
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Ventas: {product_sales[product_id]}.")
+            print(f"Unidades en inventario: {product_stock}.")
+        print('\n')
+        # Consulta las busquedas de cada producto
+        product_searches = service.get_products_searches()
+        # Ordenar lista de productos organizados de menor a mayor número de busquedas
+        less_searched_products = sorted(product_searches, key=product_searches.get)
+        # Filtrar y presentar los 50 productos menos buscados
+        print("Productos menos buscados de la tienda:")
+        for i in range(0, 50):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(less_searched_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = less_searched_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Despliega nombre del producto y busquedas al usuario
+            print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Busquedas: {product_searches[product_id]}")
     elif main_menu_option == 3:
         print("1")
     elif main_menu_option == 4:

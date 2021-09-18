@@ -9,6 +9,7 @@ class Service(Filters):
         el analisis de información.
         Esta clase es hija de la clase Filters, por lo que tiene acesso a sus métodos. 
     """
+
     def count_sales(self, id_product: int or None = None, start_date: str or None = None,
                     end_date: str or None = None, score_min: int or None = None,
                     score_max: int or None = None, refund_status: bool or None = None) -> int:
@@ -86,8 +87,6 @@ class Service(Filters):
         searches_number = len(searches_df)
         return searches_number
 
-    # Servicios Especificos
-
     def get_year_sales(self, year:int, id_product: int or None = None, refund_status: bool or None = None) -> int:
         """ Obtiene el número de ventas anuales. Cuenta con algunos filtros opcionales que permiten
             considerar unicamente un producto o descartar las ventas que terminaron en devolución.
@@ -154,9 +153,7 @@ class Service(Filters):
             # Obtener ventas de ese mes
             sales_dict[month] = self.count_sales(start_date=month_start, end_date=month_end,
                                                  id_product=id_product, refund_status=refund_status)
-
         return sales_dict
-        
 
     def get_monthly_income(self, year: int, id_product: int or None = None, refund_status: bool or None = None) -> dict:
         """ Obtiene los ingresos mensuales. Cuenta con algunos filtros opcionales que permiten
@@ -184,3 +181,77 @@ class Service(Filters):
             income_dict[month] = self.calculate_income(start_date=month_start, end_date=month_end,
                                                  id_product=id_product, refund_status=refund_status)
         return income_dict
+
+    def get_products_sales(self, refund_status: bool or None = None,
+                           start_date: str or None = None, end_date: str or None = None) -> dict:
+        """ Obtiene el número de ventas de cada producto de la tienda.
+            Las ventas pueden filtrarse por fechas.
+            Las ventas que terminaron en devolución pueden considerarse u omitirse.
+
+        Args:
+            refund_status (bool or None, optional): Ventas devueltas (True) o no devluetas (False). Defaults to None.
+            start_date (str or None, optional): Fecha de inicio de periodo de ventas considerado. Defaults to None.
+            end_date (str or None, optional): Fecha de inicio de periodo de ventas considerado. Defaults to None.
+
+        Returns:
+            dict: Ventas por producto. El key de cada elemento es el id de producto,
+                  mientras que el valor corresponde al número de ventas.
+        """
+        # Inicializar variables
+        products_sales = {}
+        # Ciclo for para revisar cada producto diferente de la tabla productos
+        for row in lifestore_products.iterrows():
+                # Se obtiene id
+                id_product = row[1]['id_product']
+                # Se cuentan ventas del producto
+                sales_number = self.count_sales(id_product=id_product, refund_status=refund_status,
+                                                start_date=start_date, end_date=end_date)
+                # Se almacena resultado en diccionario
+                products_sales[id_product] = sales_number                                     
+        return products_sales
+
+    def get_products_searches(self) -> dict:
+        """ Obtiene el número de busquedas de cada producto de la tienda.
+            Las busquedas pueden filtrarse por fechas.
+            Las busquedas que terminaron en devolución pueden considerarse u omitirse.
+
+        Returns:
+            dict: Busquedas por producto. El key de cada elemento es el id de producto,
+                  mientras que el valor corresponde al número de busquedas.
+        """
+        # Inicializar variables
+        products_searches = {}
+        # Ciclo for para revisar cada producto diferente de la tabla productos
+        for row in lifestore_products.iterrows():
+                # Se obtiene id
+                id_product = row[1]['id_product']
+                # Se cuentan busquedas del producto
+                searches = self.count_searches(id_product=id_product)
+                # Se almacena resultado en diccionario
+                products_searches[id_product] = searches                                     
+        return products_searches
+
+    def get_product_name(self, id_product: int) -> str:
+        """ Obtiene el nombre del producto de la tabla lifestore_products.
+
+        Args:
+            id_product (int): ID del producto.
+
+        Returns:
+            str: Nombre del producto.
+        """
+        name = lifestore_products.loc[lifestore_products['id_product']== id_product, 'name'].item()
+        return name
+
+    def get_product_stock(self, id_product: int) -> int:
+        """ Obtiene la cantidad de unidades de un producto en inventario,
+            a partir de la tabla lifestore_products.
+
+        Args:
+            id_product (int): ID del producto.
+
+        Returns:
+            int: Unidades del producto en inventario.
+        """
+        stock = lifestore_products.loc[lifestore_products['id_product']== id_product, 'stock'].item()
+        return stock
