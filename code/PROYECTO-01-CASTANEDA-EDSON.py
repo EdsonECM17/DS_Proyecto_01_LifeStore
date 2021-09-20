@@ -1,205 +1,260 @@
-from data.lifestore_file import lifestore_products, lifestore_sales, lifestore_searches
-
+from services.lifestore_services import Service
 from login.user_access import login
+from utils.menu_utils import select_menu, validate_question
+
 
 # CONTANTES GLOABLES
-# Lista de meses del año (como texto)
-month_list = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+# MENUS DE INTERFAZ DE USUARIO
+# Definir menu principal
+main_menu = {1: "Productos más vendidos", 2: "Productos rezagados",
+             3: "Productos por valoración", 4: "Ventas anuales",
+             5: "Ventas mensuales", 6: "Ventas por categoria",
+             7: "Consultas Avanzadas", 8: "Salir"}
+# Definir submenu de consulta
+menu_sales={1: "Número de ventas", 2: "Ingresos totales"}
+# Definir submenu de año
+menu_year = {1: "2020"}
+
+# Preguntas de Sí o No utilizadas en el menu
+continue_question = "¿Desea realizar otra consulta?"
+refunds_question = "¿Desea descartar ventas que terminaron en devolución?"
+
+# Variables auxiliares
+month_list = ("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
+
+
+# EJECUCIÓN PROGRAMA PRINCIPAL
+# Crear objeto de la clase Services para las consultas
+service = Service()
 
 # Llamar a función que valida inicio de sesion
 data_access = login() # If true, continues
 
-# Acceso correcto
-if data_access:
-    # ANALISIS DE VENTAS Y BUSQUEDAS POR PRODUCTO
-
-    # Inicializar variables relacionadas al producto
-    sales_per_product = {}  # Ventas de cada productio (id_product:total_sales_of_product)
-    searches_per_product = {}  # Busquedas de cada productio (id_product:total_searches_of_product)
-    not_sold_products = []  # Id de productos no vendidos
-    reviews_per_product_sum = {}  # Suma de reseñas (id_product:reviews_sum)
-    reviews_per_product_avg = {}  # Promedio de reseñas de cada producto (id_product:reviews_avg)
-    refunds_per_product = {}  # Conteo de devoluciones por producto (id_product:refunds_sum)
-    refund_per_product_pct = {}  # Porcentaje de devoluciones de producto respecto a total vendido (id_product:refunds_avg)
-    reviews_weight = 0.6  # Valor de reseñas para determinar calificación de producto.
-    refunds_weight = 0.4  # Valor de rembolsos para determinar calificación de producto.
-    grade_product = {}  # Calificación de producto. 60 % reviews y 40 % porcentaje de devoluciones. (id_product: grade)
-
-    # Iniciar análisis de cada producto
-    for product in lifestore_products:
-        sales_per_product[product[0]] = 0
-        searches_per_product[product[0]] = 0
-        refunds_per_product[product[0]] = 0
-        reviews_per_product_sum[product[0]] = 0
-
-        # Contar ventas del producto y sumar reseñas y devoluciones
-        for sale in lifestore_sales:
-            if sale[1] == product[0]:
-                sales_per_product[product[0]] +=1
-                reviews_per_product_sum[product[0]]+= sale[2]
-                refunds_per_product[product[0]] += sale[4]
-        # Contar busqueda de producto
-        for search in lifestore_searches:
-            if search[1] == product[0]:
-                searches_per_product[product[0]] +=1
-
-    # Resumen de análisis por producto
-    # Identificar id de 50 productos más vendidos
-    most_sold_products = sorted(sales_per_product, key=sales_per_product.get, reverse=True)[:50]
-    # Identificar id de 100 productos más buscados
-    most_searched_products = sorted(searches_per_product, key=searches_per_product.get, reverse=True)[:100]
-    # Identificar id de 50 productos menos vendidos
-    less_sold_products = sorted(sales_per_product, key=sales_per_product.get)[:50]
-    # Identificar id de 100 productos menos buscados
-    less_searched_products = sorted(searches_per_product, key=searches_per_product.get)[:100]
-
-    # Obtener promedio de reseñas de cada producto y porcentaje de devoluaciones
-    for id_product in reviews_per_product_sum.keys():
-        # Procesar datos solo en casos de que existan ventas del producto
-        if sales_per_product[id_product] > 0:
-            reviews_per_product_avg[id_product] = reviews_per_product_sum[id_product]/sales_per_product[id_product]
-            refund_per_product_pct[id_product] = round((refunds_per_product[id_product]/sales_per_product[id_product])*100, 2)
+# Acceso correcto (data_acess = true)
+while data_access:
+    # Desplegar menú principal y obtener opción seleccionada
+    main_menu_option = select_menu(main_menu)
+    # Caso para cada opción del menu principal
+    if main_menu_option == 1:
+        # Caso producto más vendidos
+        # Consulta las ventas de cada producto
+        product_sales = service.get_products_sales()
+        # Ordenar lista de productos organizados de mayor a menor número de ventas
+        most_sold_products = sorted(product_sales, key=product_sales.get, reverse=True)
+        # Filtrar y presentar los 50 productos más vendidos
+        print("Productos más vendidos de la tienda:")
+        for i in range(0, 50):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(most_sold_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = most_sold_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Obtiene la cantidad de unidades en inventario del producto
+            product_stock = service.get_product_stock(product_id)
+            # Muestra nombre del producto junto a ventas y unidades en inventario.
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Ventas: {product_sales[product_id]}.")
+            print(f"Unidades en inventario: {product_stock}.")
+        print('\n')
+        # Consulta las busquedas de cada producto
+        product_searches = service.get_products_searches()
+        # Ordenar lista de productos organizados de mayor a menor número de busquedas
+        most_searched_products = sorted(product_searches, key=product_searches.get, reverse=True)
+        # Filtrar y presentar los 50 productos más buscados
+        print("Productos más buscados de la tienda:")
+        for i in range(0, 50):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(most_searched_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = most_searched_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Despliega nombre del producto y busquedas al usuario.
+            print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Busquedas: {product_searches[product_id]}")
+    
+    elif main_menu_option == 2:
+        # Caso productos rezagados
+        # Consulta las ventas de cada producto
+        product_sales = service.get_products_sales()
+        # Ordenar lista de productos organizados de menor a mayor número de ventas
+        less_sold_products = sorted(product_sales, key=product_sales.get, reverse=True)
+        # Filtrar y presentar los 50 productos menos vendidos
+        print("Productos menos vendidos de la tienda:")
+        for i in range(0, 50):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(less_sold_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = less_sold_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Obtiene la cantidad de unidades en inventario del producto
+            product_stock = service.get_product_stock(product_id)
+            # Muestra nombre del producto junto a ventas y unidades en inventario
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Ventas: {product_sales[product_id]}.")
+            print(f"Unidades en inventario: {product_stock}.")
+        print('\n')
+        # Consulta las busquedas de cada producto
+        product_searches = service.get_products_searches()
+        # Ordenar lista de productos organizados de menor a mayor número de busquedas
+        less_searched_products = sorted(product_searches, key=product_searches.get)
+        # Filtrar y presentar los 50 productos menos buscados
+        print("Productos menos buscados de la tienda:")
+        for i in range(0, 50):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(less_searched_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = less_searched_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Despliega nombre del producto y busquedas al usuario
+            print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Busquedas: {product_searches[product_id]}")
+    
+    elif main_menu_option == 3:
+        # Caso de valoración de productos
+        product_grades = service.get_product_grades()
+        # Separar productos con calificación (ventas>0) de los productos no calificados ('N.D.')
+        non_graded_products = {id_product:grade for (id_product,grade) in product_grades.items() if isinstance(grade, str)}
+        graded_products = {id_product:grade for (id_product,grade) in product_grades.items() if isinstance(grade, float)}
+        # Filtrar productos por calificacion de mayor a menor
+        most_valued_products = sorted(graded_products, key=graded_products.get, reverse=True)
+        # Productos con mejor valoración
+        print("Los productos mejor valorados son:")
+        for i in range(0, 20):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(most_valued_products):
+                break
+            # Obtiene el id del producto en posición i
+            product_id = most_valued_products[i]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Muestra nombre del producto junto a su valoración
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Valoración: {product_grades[product_id]}.")
+        print("\n")
+        # Productos con menor valoración
+        print("Los productos peor valorados son:")
+        for i in range(0, 20):
+            # Si no existieran tantos elementos en la lista, salir de bucle
+            if i>=len(most_valued_products):
+                break
+            # Obtiene el id del producto en posición [-(1+i)]
+            product_id = most_valued_products[-(1+i)]
+            # Obtiene el nombre del producto
+            product_name = service.get_product_name(product_id)
+            # Muestra nombre del producto junto a su valoración
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Valoración:: {product_grades[product_id]}.")
+        print("\n")
+        print(f"Por otro lado, hay {len(non_graded_products)} equipos sin ventas, y en consecuencia, sin valoración.")
+        print("Los productos que no tienen valoración son:")
+        for product_id in non_graded_products.keys():
+                # Obten nombre del producto
+                product_name = service.get_product_name(product_id)
+                # Imprime datos del producto
+                print(f"ID:{product_id:02d} - {product_name}.")
+    
+    elif main_menu_option == 4:
+        # Caso: Ventas Anuales
+        # Desplegar menú de ventas y obtener opción seleccionada
+        menu_sales_option = select_menu(menu_sales)
+        # Desplegar menu para seleccionar año y obtener año como int
+        year = int(menu_year[select_menu(menu_year)])
+        # Validar si se consideran o descartan devoluciones
+        if validate_question(refunds_question):
+            refunds_case = False
         else:
-            reviews_per_product_avg[id_product] = 0
-            refund_per_product_pct[id_product] = 0
+            refunds_case = None
+        if menu_sales_option == 1:
+            # Se obtiene numero de ventas y se muestra resultado
+            sales_number = service.get_year_sales(year, refund_status=refunds_case)
+            print(f"En {year}, se tuvieron un total de {sales_number} ventas.")
+            print(f"En promedio, se tuvieron {round(sales_number/12)} ventas al mes.")
+        elif menu_sales_option == 2:
+            # Se obtienen ingresos y se muestran resultados
+            income = service.get_year_income(year, refund_status=refunds_case)
+            print(f"En {year}, los ingresos totales son ${income:,.2f}.")
     
-    for id_product in refund_per_product_pct.keys():
-        # Se consideran solo productos con ventas
-        if sales_per_product[id_product] > 0:
-            # Obtener partes de califiguración y sumarlas para obtener la calificación
-            reviews_part = reviews_weight*(reviews_per_product_avg[id_product]/5)*100
-            refunds_part = refunds_weight*(100-refund_per_product_pct[id_product])
-            grade_product[id_product]= reviews_part + refunds_part
+    elif main_menu_option == 5:
+        # Caso: Ventas Mensuales
+        # Desplegar menú de ventas y obtener opción seleccionada
+        menu_sales_option = select_menu(menu_sales)
+        # Desplegar menu para seleccionar año y obtener año como int
+        year = int(menu_year[select_menu(menu_year)])
+        # Validar si se consideran o descartan devoluciones
+        if validate_question(refunds_question):
+            refunds_case = False
         else:
-            not_sold_products.append(id_product)
-
-    # Ordenar calificaciones de mayor a menor
-    best_graded = sorted(grade_product, key=grade_product.get, reverse=True)[:20] # mayor a menor
-    worse_graded = sorted(grade_product, key=grade_product.get)[:20] # menor a mayor
-
-    # ANALISIS DE VENTAS Y BUSQUEDAS POR TIEMPO (mes y año)
-    # Inicializar datos del cada mes y datos anuales
-    sales_income_per_month = {}
-    sales_number_per_month = {}
-    sales_year = {'sales_number': 0, 'sales_income': 0}
-    for i in range(1,13):
-        sales_income_per_month[i] = 0
-        sales_number_per_month[i] = 0
+            refunds_case = None
+        if menu_sales_option == 1:
+            # Se obtiene numero de ventas de cada mes
+            sales_month = service.get_monthly_sales(year, refund_status=refunds_case)
+            # Se muestran los resultados de cada mes
+            print(f"Ventas mensuales del año {year}:")
+            for month in sales_month.keys():
+                print(f"{month}.- {month_list[month-1]}: {sales_month[month]}")
+            print('\n')
+            # Se ordenan los meses en una lista de mayor a menor numero de ventas
+            month_most_sales = sorted(sales_month, key=sales_month.get, reverse=True)
+            # Se presentan los meses con mayor número de ventas
+            print("Meses con más ventas:")
+            for i in range(0,6):
+                month = month_most_sales[i]
+                print(f"{i+1}.- {month_list[month-1]}")
+            print('\n')
+            # Se presentan los meses con menor número de ventas
+            print("Meses con menos ventas:")
+            for i in range(0,6):
+                month = month_most_sales[11-i] # Del ultimo al primero
+                print(f"{i+1}.- {month_list[month-1]}")
+        elif menu_sales_option == 2:
+            # Se obtienen ingresos y se muestran resultados
+            income_month = service.get_monthly_income(year, refund_status=refunds_case)
+            # Se muestran los resultados de cada mes
+            print(f"Ingresos mensuales del año {year}:")
+            for month in income_month.keys():
+                print(f"{month}.- {month_list[month-1]}: ${income_month[month]:,.2f}")
+            print('\n')
+            # Se ordenan los meses en una lista de más a menos ingresos
+            month_most_income = sorted(income_month, key=income_month.get, reverse=True)
+            # Se presentan los meses con mayor número de ingresos
+            print("Meses con más ingresos:")
+            for i in range(0,6):
+                month = month_most_income[i]
+                print(f"{i+1}.- {month_list[month-1]}")
+            print('\n')
+            # Se presentan los meses con menor número de ingresos
+            print("Meses con menos ingresos:")
+            for i in range(0,6):
+                month = month_most_income[11-i] # Del ultimo al primero
+                print(f"{i+1}.- {month_list[month-1]}")
     
-    # Iniciar análisis de cada venta registrada
-    for sale in lifestore_sales:
-        # Identificar mes de la fecha a partir del string en lifestore_sales
-        month=sale[3].split('/')[1]
-        # Añadir venta al conteo mensual
-        sales_number_per_month[int(month)] += 1
-        # Buscar precio de producto
-        for product in lifestore_products:
-            if sale[1] == product[0]:
-                # Añadir precio a ingresos del mes
-                sales_income_per_month[int(month)] += product[2]
-                break
+    elif main_menu_option == 6:
+        # Caso ventas por categorias
+        # Obtener no. de productos por categoria y mostrar
+        category_products = service.count_category_products()
+        print("Productos por categoria:")
+        for category in category_products.keys():
+            print(f"- {category}: {category_products[category]}")
+        # Obtener ventas por categoria y mostrar
+        category_sales = service.get_category_sales(refund_status=False)
+        print("\nNúmero de ventas por categoria:")
+        for category in category_sales.keys():
+            print(f"- {category}: {category_sales[category]}")
+        # Obtener ingresos por categoria y mostrar
+        category_income = service.get_category_income(refund_status=False)
+        print("\nIngresos por categoria:")
+        for category in category_income.keys():
+            print(f"- {category}: ${category_income[category]:,.2f}") 
     
-    # Añadir resultados de cada mes a la variable año
-    for month in sales_income_per_month.keys():
-        sales_year['sales_number'] += sales_number_per_month[month]
-        sales_year['sales_income'] += sales_income_per_month[month]
-    # Ventas promedio por mes
-    month_sales_avg = round(sales_year['sales_number']/12)
-    # Meses ordenados por mayor numero de ventas
-    month_most_sales = sorted(sales_number_per_month, key=sales_number_per_month.get, reverse=True)
-
-    print("\nRESULTADOS OBTENIDOS:\n")
-    # Resultados de ventas y busqueda del producto
-    print("Análisis de ventas y búsquedas de producto - Resultados\n")
-    # Productos con más ventas
-    print("Los productos más vendidos son:")
-    i=0
-    for id_product in most_sold_products:
-        i+=1
-        # For para identificar nombre de producto por su id_product
-        for product in lifestore_products:
-            if id_product == product[0]:
-                product_name = product[1]
-                break
-        print(" "+str(i)+".-"+product_name+". Ventas:"+str(sales_per_product[id_product]))
+    elif main_menu_option == 7:
+        print("Opción no disponible.")
     
-    # Productos con menos ventas
-    print("\nLos productos menos vendidos son:")
-    i=0
-    for id_product in less_sold_products:
-        i+=1
-        for product in lifestore_products:
-            if id_product == product[0]:
-                product_name = product[1]
-                break
-        print(" "+str(i)+".-"+product_name+". Ventas:"+str(sales_per_product[id_product]))
-    # Productos con mas búsquedas
-    print("\nLos productos más buscados son:")
-    i=0
-    for id_product in most_searched_products:
-        i+=1
-        for product in lifestore_products:
-            if id_product == product[0]:
-                product_name = product[1]
-                break
-        print(" "+str(i)+".-"+product_name+". Ventas:"+str(sales_per_product[id_product]))
-    # Productos con menos búsquedas
-    print("\nLos productos menos buscados son:")
-    i=0
-    for id_product in less_searched_products:
-        i+=1
-        for product in lifestore_products:
-            if id_product == product[0]:
-                product_name = product[1]
-                break
-        print(" "+str(i)+".-"+product_name+"."+str(sales_per_product[id_product]))
+    elif main_menu_option == 8:
+        break
+    # Despues de la consulta de un caso, validar si se desea continuar o salir.
+    print('')
+    data_access = validate_question(continue_question)
 
-
-    # Resultados de acuerdo a valoración de productos
-    print("\n\nAnálisis de valoración de producto:")
-    print("Nota: Este análisis no evalúa productos que no tuvieron ventas.\n")
-    # Productos con mejor calificación
-    print("Los productos con mejor valoración por el cliente son:")
-    i=0
-    for id_product in best_graded:
-        i+=1
-        for product in lifestore_products:
-            if id_product == product[0]:
-                product_name = product[1]
-                break
-        print(" "+str(i)+".-"+product_name+".")
-    # Productos con menor calificación
-    print("Los productos con menor valoración por el cliente son:")
-    i=0
-    for id_product in worse_graded:
-        i+=1
-        for product in lifestore_products:
-            if id_product == product[0]:
-                product_name = product[1]
-                break
-        print(" "+str(i)+".-"+product_name+".")
-    
-    # Resultados de análisis de tiempo
-    print("\n\nAnálisis por tiempo - Resultados\n")
-    for month in sales_income_per_month.keys():
-        # Generar mensaje de ingresos al mes que mostrar e imprimir.
-        # Mediante month y month_list se obtiene el mes como texto
-        month_income_msg = ("El mes de " + month_list[int(month-1)] + " se tuvieron ingresos de $" +
-                            str(sales_income_per_month[month])+ ", con un total de " +
-                            str(sales_number_per_month[month]) + " ventas.")
-        print(month_income_msg)
-    
-    # Mostrar ventas promedio mensuales
-    print("\nEn promedio al mes se venden " + str(month_sales_avg) + " productos.")
-
-    # Mostrar ingresos y ventas totales anuales
-    year_income_msg = ("\nEn total, en el año se tuvieron ingresos de $" + str(sales_year['sales_income']) +
-                       ", obtenidos mediante " + str(sales_year['sales_number']) + " ventas.")
-    print(year_income_msg)
-    # Mostrar meses con más ventas al año
-    # For para formar string con 6 meses con más ventas al año
-    print("\nLos meses con más ventas al año son:")
-    i = 0
-    for month in month_most_sales[:6]:
-        i += 1
-        print(" " + str(i) + ".-" + month_list[int(month-1)])
+print("\n¡Hasta la proxima!")
