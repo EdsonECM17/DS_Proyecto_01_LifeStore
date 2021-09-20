@@ -1,4 +1,5 @@
 from services.lifestore_services import Service
+from utils.graph_utils import Summary_Chart
 from login.user_access import login
 from utils.menu_utils import select_menu, validate_question
 
@@ -21,11 +22,13 @@ refunds_question = "¿Desea descartar ventas que terminaron en devolución?"
 
 # Variables auxiliares
 month_list = ("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
-
+plot_path = "output" # Carpeta para gráficas
 
 # EJECUCIÓN PROGRAMA PRINCIPAL
 # Crear objeto de la clase Services para las consultas
 service = Service()
+# Crear objeto de la clase Grafica
+plot = Summary_Chart(plot_path)
 
 # Llamar a función que valida inicio de sesion
 data_access = login() # If true, continues
@@ -194,20 +197,22 @@ while data_access:
             print(f"Ventas mensuales del año {year}:")
             for month in sales_month.keys():
                 print(f"{month}.- {month_list[month-1]}: {sales_month[month]}")
-            print('\n')
             # Se ordenan los meses en una lista de mayor a menor numero de ventas
             month_most_sales = sorted(sales_month, key=sales_month.get, reverse=True)
             # Se presentan los meses con mayor número de ventas
-            print("Meses con más ventas:")
+            print("\nMeses con más ventas:")
             for i in range(0,6):
                 month = month_most_sales[i]
                 print(f"{i+1}.- {month_list[month-1]}")
-            print('\n')
             # Se presentan los meses con menor número de ventas
-            print("Meses con menos ventas:")
+            print("\nMeses con menos ventas:")
             for i in range(0,6):
                 month = month_most_sales[11-i] # Del ultimo al primero
                 print(f"{i+1}.- {month_list[month-1]}")
+            print("")
+            # Graficar resultados
+            plot.bar_summary(sales_month, f"Ventas Mensuales en {year}", "Mes",
+                             "No. de Ventas", "mes_ventas")
         elif menu_sales_option == 2:
             # Se obtienen ingresos y se muestran resultados
             income_month = service.get_monthly_income(year, refund_status=refunds_case)
@@ -215,20 +220,22 @@ while data_access:
             print(f"Ingresos mensuales del año {year}:")
             for month in income_month.keys():
                 print(f"{month}.- {month_list[month-1]}: ${income_month[month]:,.2f}")
-            print('\n')
             # Se ordenan los meses en una lista de más a menos ingresos
             month_most_income = sorted(income_month, key=income_month.get, reverse=True)
             # Se presentan los meses con mayor número de ingresos
-            print("Meses con más ingresos:")
+            print("\nMeses con más ingresos:")
             for i in range(0,6):
                 month = month_most_income[i]
                 print(f"{i+1}.- {month_list[month-1]}")
-            print('\n')
             # Se presentan los meses con menor número de ingresos
-            print("Meses con menos ingresos:")
+            print("\nMeses con menos ingresos:")
             for i in range(0,6):
                 month = month_most_income[11-i] # Del ultimo al primero
                 print(f"{i+1}.- {month_list[month-1]}")
+            print("")
+            # Graficar resultados
+            plot.bar_summary(income_month, f"Ingresos Mensuales en {year}", "Mes",
+                             "Ingresos [$]", "mes_ingresos", "green")
     
     elif main_menu_option == 6:
         # Caso ventas por categorias
@@ -237,16 +244,28 @@ while data_access:
         print("Productos por categoria:")
         for category in category_products.keys():
             print(f"- {category}: {category_products[category]}")
+        print("")
+        # Graficar resultados
+        plot.bar_summary(category_products, "Productos por categoría", "Categoría",
+                        "No. de Producto", "categoria_productos", "red")
         # Obtener ventas por categoria y mostrar
         category_sales = service.get_category_sales(refund_status=False)
         print("\nNúmero de ventas por categoria:")
         for category in category_sales.keys():
             print(f"- {category}: {category_sales[category]}")
+        print("")
+        # Graficar resultados
+        plot.bar_summary(category_sales, "Ventas por categoría", "Categoría",
+                        "No. de Ventas", "categoria_ventas")
         # Obtener ingresos por categoria y mostrar
         category_income = service.get_category_income(refund_status=False)
         print("\nIngresos por categoria:")
         for category in category_income.keys():
-            print(f"- {category}: ${category_income[category]:,.2f}") 
+            print(f"- {category}: ${category_income[category]:,.2f}")
+        print("")
+        # Graficar resultados
+        plot.bar_summary(category_income, "Ingresos por categoría", "Categoría",
+                        "Ingresos [$]", "categoria_ingresos", "green")
     
     elif main_menu_option == 7:
         print("Opción no disponible.")
