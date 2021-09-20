@@ -231,7 +231,22 @@ while data_access:
                 print(f"{i+1}.- {month_list[month-1]}")
     
     elif main_menu_option == 6:
-        print("1")
+        # Caso ventas por categorias
+        # Obtener no. de productos por categoria y mostrar
+        category_products = service.count_category_products()
+        print("Productos por categoria:")
+        for category in category_products.keys():
+            print(f"- {category}: {category_products[category]}")
+        # Obtener ventas por categoria y mostrar
+        category_sales = service.get_category_sales(refund_status=False)
+        print("\nNúmero de ventas por categoria:")
+        for category in category_sales.keys():
+            print(f"- {category}: {category_sales[category]}")
+        # Obtener ingresos por categoria y mostrar
+        category_income = service.get_category_income(refund_status=False)
+        print("\nIngresos por categoria:")
+        for category in category_income.keys():
+            print(f"- {category}: ${category_income[category]:,.2f}") 
     
     elif main_menu_option == 7:
         print("Opción no disponible.")
