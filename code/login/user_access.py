@@ -31,11 +31,11 @@ def login(login_attempts:int = 3):
         user = input("Ingrese su usuario: ")
         password = input("Ingrese su contraseña: ")
         # Caso Usuario-Contraseña Validos
-        if user_table['user_name'].str.contains(user).any():
+        if user in user_table['user_name'].values:
             # Conseguir resto de los datos para ese usuario especifico
             user_data = user_table.loc[user_table['user_name'].str.contains(user)]
             # Si la contraseña concuerda con el usuario, concede acesso
-            if user_data['password'].str.contains(password)[0]:
+            if password in user_data['password'].values:
                 successful_login = True
                 print("Bienvenido "+user_data['name'][0]+".\n")
                 return True
