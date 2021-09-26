@@ -150,7 +150,7 @@ while data_access:
             # Obtiene el nombre del producto
             product_name = service.get_product_name(product_id)
             # Muestra nombre del producto junto a su valoración
-            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Valoración:: {product_grades[product_id]}.")
+            print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Valoración: {product_grades[product_id]}.")
         print("\n")
         print(f"Por otro lado, hay {len(non_graded_products)} equipos sin ventas, y en consecuencia, sin valoración.")
         print("Los productos que no tienen valoración son:")
