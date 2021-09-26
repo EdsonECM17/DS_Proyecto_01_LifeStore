@@ -9,8 +9,8 @@ from utils.menu_utils import select_menu, validate_question
 # Definir menu principal
 main_menu = {1: "Productos más vendidos", 2: "Productos rezagados",
              3: "Productos por valoración", 4: "Ventas anuales",
-             5: "Ventas mensuales", 6: "Ventas por categoria",
-             7: "Consultas Avanzadas", 8: "Salir"}
+             5: "Ventas mensuales", 6: "Ventas por categoría",
+             7: "Consultas avanzadas", 8: "Salir"}
 # Definir submenu de consulta
 menu_sales={1: "Número de ventas", 2: "Ingresos totales"}
 # Definir submenu de año
@@ -61,9 +61,9 @@ while data_access:
             print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Ventas: {product_sales[product_id]}.")
             print(f"Unidades en inventario: {product_stock}.")
         print('\n')
-        # Consulta las busquedas de cada producto
+        # Consulta las búsquedas de cada producto
         product_searches = service.get_products_searches()
-        # Ordenar lista de productos organizados de mayor a menor número de busquedas
+        # Ordenar lista de productos organizados de mayor a menor número de búsquedas
         product_searches = {id_product:searches for (id_product,searches) in product_searches.items() if searches > 0}
         most_searched_products = sorted(product_searches, key=product_searches.get, reverse=True)
         # Filtrar y presentar los 50 productos más buscados
@@ -76,8 +76,8 @@ while data_access:
             product_id = most_searched_products[i]
             # Obtiene el nombre del producto
             product_name = service.get_product_name(product_id)
-            # Despliega nombre del producto y busquedas al usuario.
-            print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Busquedas: {product_searches[product_id]}")
+            # Despliega nombre del producto y búsquedas al usuario.
+            print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Búsquedas: {product_searches[product_id]}")
     
     elif main_menu_option == 2:
         # Caso productos rezagados
@@ -101,9 +101,9 @@ while data_access:
             print(f"{i+1}.- {product_name} (ID: {product_id:02d}). Ventas: {product_sales[product_id]}.")
             print(f"Unidades en inventario: {product_stock}.")
         print('\n')
-        # Consulta las busquedas de cada producto
+        # Consulta las búsquedas de cada producto
         product_searches = service.get_products_searches()
-        # Ordenar lista de productos organizados de menor a mayor número de busquedas
+        # Ordenar lista de productos organizados de menor a mayor número de búsquedas
         less_searched_products = sorted(product_searches, key=product_searches.get)
         # Filtrar y presentar los 50 productos menos buscados
         print("Productos menos buscados de la tienda:")
@@ -115,8 +115,8 @@ while data_access:
             product_id = less_searched_products[i]
             # Obtiene el nombre del producto
             product_name = service.get_product_name(product_id)
-            # Despliega nombre del producto y busquedas al usuario
-            print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Busquedas: {product_searches[product_id]}")
+            # Despliega nombre del producto y búsquedas al usuario
+            print(f"{i+1}.- {product_name} (ID: {product_id: 02d}). Búsquedas: {product_searches[product_id]}")
     
     elif main_menu_option == 3:
         # Caso de valoración de productos
@@ -240,28 +240,28 @@ while data_access:
                              "Ingresos [$]", "mes_ingresos", "green")
     
     elif main_menu_option == 6:
-        # Caso ventas por categorias
-        # Obtener no. de productos por categoria y mostrar
+        # Caso ventas por categorías
+        # Obtener no. de productos por categoría y mostrar
         category_products = service.count_category_products()
-        print("Productos por categoria:")
+        print("Productos por categoría:")
         for category in category_products.keys():
             print(f"- {category}: {category_products[category]}")
         print("")
         # Graficar resultados
         plot.bar_summary(category_products, "Productos por categoría", "Categoría",
                         "No. de Producto", "categoria_productos", "red")
-        # Obtener ventas por categoria y mostrar
+        # Obtener ventas por categoría y mostrar
         category_sales = service.get_category_sales(refund_status=False)
-        print("\nNúmero de ventas por categoria:")
+        print("\nNúmero de ventas por categoría:")
         for category in category_sales.keys():
             print(f"- {category}: {category_sales[category]}")
         print("")
         # Graficar resultados
         plot.bar_summary(category_sales, "Ventas por categoría", "Categoría",
                         "No. de Ventas", "categoria_ventas")
-        # Obtener ingresos por categoria y mostrar
+        # Obtener ingresos por categoría y mostrar
         category_income = service.get_category_income(refund_status=False)
-        print("\nIngresos por categoria:")
+        print("\nIngresos por categoría:")
         for category in category_income.keys():
             print(f"- {category}: ${category_income[category]:,.2f}")
         print("")
