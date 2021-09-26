@@ -43,6 +43,7 @@ while data_access:
         # Consulta las ventas de cada producto
         product_sales = service.get_products_sales()
         # Ordenar lista de productos organizados de mayor a menor número de ventas
+        product_sales = {id_product:sales for (id_product,sales) in product_sales.items() if sales > 0}
         most_sold_products = sorted(product_sales, key=product_sales.get, reverse=True)
         # Filtrar y presentar los 50 productos más vendidos
         print("Productos más vendidos de la tienda:")
@@ -63,6 +64,7 @@ while data_access:
         # Consulta las busquedas de cada producto
         product_searches = service.get_products_searches()
         # Ordenar lista de productos organizados de mayor a menor número de busquedas
+        product_searches = {id_product:searches for (id_product,searches) in product_searches.items() if searches > 0}
         most_searched_products = sorted(product_searches, key=product_searches.get, reverse=True)
         # Filtrar y presentar los 50 productos más buscados
         print("Productos más buscados de la tienda:")
@@ -82,7 +84,7 @@ while data_access:
         # Consulta las ventas de cada producto
         product_sales = service.get_products_sales()
         # Ordenar lista de productos organizados de menor a mayor número de ventas
-        less_sold_products = sorted(product_sales, key=product_sales.get, reverse=True)
+        less_sold_products = sorted(product_sales, key=product_sales.get)
         # Filtrar y presentar los 50 productos menos vendidos
         print("Productos menos vendidos de la tienda:")
         for i in range(0, 50):
