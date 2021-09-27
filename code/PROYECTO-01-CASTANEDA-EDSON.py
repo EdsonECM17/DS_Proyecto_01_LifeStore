@@ -249,7 +249,7 @@ while data_access:
         print("")
         # Graficar resultados
         plot.bar_summary(category_products, "Productos por categoría", "Categoría",
-                        "No. de Producto", "categoria_productos", "red")
+                         "No. de Producto", "categoria_productos", "red")
         # Obtener ventas por categoría y mostrar
         category_sales = service.get_category_sales(refund_status=False)
         print("\nNúmero de ventas por categoría:")
@@ -258,7 +258,7 @@ while data_access:
         print("")
         # Graficar resultados
         plot.bar_summary(category_sales, "Ventas por categoría", "Categoría",
-                        "No. de Ventas", "categoria_ventas")
+                         "No. de Ventas", "categoria_ventas")
         # Obtener ingresos por categoría y mostrar
         category_income = service.get_category_income(refund_status=False)
         print("\nIngresos por categoría:")
@@ -267,7 +267,7 @@ while data_access:
         print("")
         # Graficar resultados
         plot.bar_summary(category_income, "Ingresos por categoría", "Categoría",
-                        "Ingresos [$]", "categoria_ingresos", "green")
+                         "Ingresos [$]", "categoria_ingresos", "green")
     
     elif main_menu_option == 7:
         print("Opción no disponible.")
